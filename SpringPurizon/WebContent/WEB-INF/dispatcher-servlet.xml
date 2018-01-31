@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-3.0.xsd
+http://www.springframework.org/schema/tx
+http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+http://www.springframework.org/schema/mvc 
+http://www.springframework.org/schema/mvc/spring-mvc.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+
+ 	<context:property-placeholder location="classpath:resources/database.properties" />
+
+	<context:component-scan base-package="com.smart.ws" />
+ 
+ <tx:annotation-driven transaction-manager="hibernateTransactionManager"/>
+ <bean
+	class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+	<property name="exceptionMappings">
+		<props>
+			<prop key="java.lang.Exception">error</prop>
+		</props>
+	</property>
+
+</bean>
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/views/</value>
+		</property>
+		<property name="suffix">
+			<value>.jsp</value>
+		</property>
+	</bean>
+	
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${database.driver}" />
+		<property name="url" value="${database.url}" />
+		<property name="username" value="${database.user}" />
+		<property name="password" value="${database.password}" />
+	</bean>
+<!-- 
+<bean id="hibernateProperties"
+		class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+			<property name="properties">
+				<props>
+					The database specific dialect
+					<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
+					auto create/update tables
+					<prop key="hibernate.hbm2ddl.auto">update</prop>
+					maximum "depth" for the outer join in case of single-ended associations 
+						one-to-one, many-to-one
+					<prop key="hibernate.max_fetch_depth">1</prop>
+					replace the keywords true and false with the literals 1 and 0 in 
+						the translated SQL
+					<prop key="hibernate.query.substitutions">true 1, false 0</prop>
+					enables use of JDBC2 batch updates
+					<prop key="hibernate.jdbc.batch_size">25</prop>
+	
+					properties to output SQL
+					<prop key="hibernate.show_sql">true</prop>
+					<prop key="hibernate.format_sql">false</prop>
+					<prop key="hibernate.generate_statistics">false</prop>
+	
+					Connection pool specific properties
+					http://www.informit.com/articles/article.aspx?p=353736&seqNum=4
+					<prop key="hibernate.dbcp.maxActive">20</prop>
+					<prop key="hibernate.dbcp.maxIdle">20</prop>
+					<prop key="hibernate.dbcp.maxWait">-1</prop>
+					<prop key="hibernate.dbcp.whenExhaustedAction">1</prop>
+					<prop key="hibernate.dbcp.testOnBorrow">true</prop>
+					<prop key="hibernate.dbcp.testOnReturn">true</prop>
+					<prop key="hibernate.dbcp.validateQuery">SELECT 1+1</prop>
+					<prop key="hibernate.dbcp.ps.maxActive">10</prop>
+					<prop key="hibernate.dbcp.ps.maxIdle">10</prop>
+					<prop key="hibernate.dbcp.ps.maxWait">1000</prop>
+					<prop key="hibernate.dbcp.ps.whenExhaustedAction">1</prop>
+					</props>
+					
+			</property>
+	</bean>
+	-->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		  	<property name="dataSource" ref="dataSource"></property>
+<!-- 		  	<property name="annotatedClasses"> -->
+<!--   <list> -->
+<!--    <value>com.smart.rtu.model.Client</value> -->
+<!--   </list> -->
+<!--  </property> -->
+		  	<property name="hibernateProperties">
+					<props>
+  <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+  <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+<!--   <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}  </prop>     -->
+        </props>
+			</property>	
+<!-- 			using classpath scanning for autodetection of entity classes: -->
+		  	 <property name="packagesToScan" value="com.smart.ws"/>
+	    </bean>
+	    
+	<bean id="hibernateTransactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean> 
+	
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+
+		<!-- one of the properties available; the maximum file size in bytes -->
+		<property name="maxUploadSize" value="10000000" />
+	</bean>
+</beans>
